@@ -30,3 +30,5 @@
 *.exe
 *.out
 *.app
+/GFPre/*.user
+/GFPre/x64
