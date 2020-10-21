@@ -5,7 +5,7 @@
 
 std::vector<GDAL_GCP> get_gcp_from_rpc(const std::size_t& imgWidth, const std::size_t& imgHeight, GDALRPCInfo& rpcInfo)
 {
-	int gcpNum = 100;
+	int gcpNum = 10000;
 	double gcpGridSize = sqrt(floor(imgWidth * imgHeight / double(gcpNum)));
 	int gcpGridXNum = floor(imgWidth / gcpGridSize);
 	int gcpGridYNum = floor(imgHeight / gcpGridSize);
@@ -121,5 +121,42 @@ bool gf_geocode_img(const std::string& gf1Path, const std::string& geocodePath)
 	delete[] imgBuf;
 	GDALClose(dstDataset);
 	return true;
+
+}
+
+
+bool gf_reproject_img(const std::string& gf1Path, const std::string& reprojPath)
+{
+	// 读取原始影像
+	GDALAllRegister();
+
+	GDALDatasetH imgDataset = GDALOpen(gf1Path.c_str(), GA_ReadOnly);
+	if (imgDataset == nullptr)
+	{
+		std::cout << "Open File Fail " << std::endl;
+		return false;
+	}
+
+	std::size_t numBand = ((GDALDataset*)imgDataset)->GetRasterCount();
+	if (numBand < 1)
+	{
+		std::cout << "Image No Band" << std::endl;
+		GDALClose(imgDataset);
+		return false;
+	}
+
+	GDALDataset* dstDataset = (GDALDataset*)GDALWarp(reprojPath.c_str(), nullptr, numBand,
+		                                             &imgDataset, nullptr, nullptr);
+	GDALClose(imgDataset);
+	if (dstDataset == nullptr)
+	{
+		return false;
+	}
+	else
+	{
+		GDALClose(dstDataset);
+		return true;
+
+	}
 
 }
