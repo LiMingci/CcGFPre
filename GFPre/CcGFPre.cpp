@@ -145,7 +145,7 @@ bool gf_reproject_img(const std::string& gf1Path, const std::string& reprojPath)
 		return false;
 	}
 
-	GDALDataset* dstDataset = (GDALDataset*)GDALWarp(reprojPath.c_str(), nullptr, numBand,
+	GDALDataset* dstDataset = (GDALDataset*)GDALWarp(reprojPath.c_str(), nullptr, 1,
 		                                             &imgDataset, nullptr, nullptr);
 	GDALClose(imgDataset);
 	if (dstDataset == nullptr)
